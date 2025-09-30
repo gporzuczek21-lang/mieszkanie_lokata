@@ -1,43 +1,33 @@
 import numpy as np
 import numpy_financial as npf
 import matplotlib.pyplot as plt
-pv = 120000
-rate = 0.05
-years = 5
-freq = 12
-rate = rate / freq
-nper = years * freq
-rata = 0.12
-rata = rata / freq
-bieda = 0
 
-wartosc_przyszla = -np.around(npf.fv(rate, nper, 1, pv))
+cena_teraz = 120000 
+stopa_wzrostu_ceny = 0.05  
+lata = 5
+okresy = lata * 12  
 
-wplata = (-npf.pmt(rata,nper,bieda,wartosc_przyszla))
-wplata = wplata.round(2)
+fv_mieszkania = cena_teraz * (1 + stopa_wzrostu_ceny) ** lata
 
-np.set_printoptions(suppress = True)
-principal_decreasing = np.around(np.zeros(nper)+(wartosc_przyszla/nper),2)
+stopa_nominalna_roczna = 0.12  
+stopa_miesieczna = stopa_nominalna_roczna / 12  
 
-balance = np.zeros(nper)
-balance_close = np.around(balance + np.cumsum(principal_decreasing),2)
+miesieczna_wplata = -npf.pmt(rate=stopa_miesieczna, nper=okresy, pv=0, fv=fv_mieszkania)
 
-print(f"za {years} cena mieszkania bedzie wynosiła {wartosc_przyszla}zł")
-print(f"Na lokate w banku nalezy co miesią wpłacać {wplata}zł")
+miesiace = np.arange(1, okresy + 1)
+ceny_mieszkania = cena_teraz * (1 + stopa_wzrostu_ceny) ** (miesiace / 12)
 
-punkt_poczatkowy_x = 0
-punkt_poczatkowy_y = pv
-punkt_koncowy_x = nper
-punkt_koncowy_y = wartosc_przyszla
+wartosci_lokaty = [npf.fv(rate=stopa_miesieczna, nper=i, pmt=-miesieczna_wplata, pv=0) for i in miesiace]
 
-x_wspolrzedne = [punkt_poczatkowy_x, punkt_koncowy_x]
-y_wspolrzedne = [punkt_poczatkowy_y, punkt_koncowy_y]
 
-plt.plot(balance_close,label='suma zgromadzanego kapitału')
-plt.plot(x_wspolrzedne, y_wspolrzedne,label='cena mieszkania')
+print(f"Przyszła cena mieszkania za 5 lat: {fv_mieszkania:,.2f} zł")
+print(f"Wymagana miesięczna wpłata: {miesieczna_wplata:,.2f} zł")
+
+
+plt.plot(ceny_mieszkania, label='Cena mieszkania')
+plt.plot(wartosci_lokaty, label='Wartość kapitalu na lokacie')
 plt.legend()
-plt.xlabel('Liczba okresów')
-plt.ylabel('waluta "zł"')
+plt.xlabel('Miesiąc')
+plt.ylabel('Kwota (zł)')
 
 plt.show()
-  
