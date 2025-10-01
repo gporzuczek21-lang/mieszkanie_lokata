@@ -17,7 +17,7 @@ miesieczna_wplata = -npf.pmt(rate=stopa_miesieczna, nper=okresy, pv=0, fv=fv_mie
 miesiace = np.arange(1, okresy + 1)
 ceny_mieszkania = cena_teraz * (1 + stopa_wzrostu_ceny) ** (miesiace / 12)
 
-wartosci_lokaty = [npf.fv(rate=stopa_miesieczna, nper=i, pmt=-miesieczna_wplata, pv=0) for i in miesiace]
+wartosci_lokaty = npf.fv(rate=stopa_miesieczna, nper=miesiace, pmt=-miesieczna_wplata, pv=0)
 
 
 print(f"Przyszła cena mieszkania za 5 lat: {fv_mieszkania:,.2f} zł")
